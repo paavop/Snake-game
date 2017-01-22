@@ -1,5 +1,5 @@
 var xsize=500;
-var ysize=500;
+var ysize=400;
 
 
 var canvas=document.getElementById("canvas");
@@ -47,8 +47,12 @@ function snake_block(sx,sy){
   }
 }
 var mainloop=function(){
-  draw()
-  update()
+  if(playing){
+    draw();
+    update();
+  }else{
+    draw_reset();
+  }
 };
 
 var draw=function(){
@@ -66,10 +70,20 @@ var draw=function(){
 };
 var draw_score=function(){
   ctx.fillRect(0,ysize,xsize,100);
-  ctx.font="40px Garamond";
+  ctx.textAlign = "center";
+  ctx.font = "48px serif";
   ctx.fillStyle="white";
-  ctx.fillText("Score: "+score,20,ysize+100/2);
+  ctx.fillText("Score: "+score,xsize/2,ysize+100/2);
   ctx.fillStyle="Black";
+}
+var draw_reset=function(){
+  ctx.textAlign = "center";
+  ctx.font = "58px serif";
+  ctx.fillText("You dead", xsize/2, ysize/2);
+  ctx.font = "32px serif";
+  ctx.fillText("Press enter to reset", xsize/2, ysize/2+50);
+  document.onkeydown = checkKey;
+
 }
 var update=function(){
 
@@ -79,14 +93,22 @@ var update=function(){
   }else{
     dead();
   }
+  check_collision();
   if(round_down(treat.x)==round_down(snake[0].x) && round_down(treat.y)==round_down(snake[0].y)){
     eat_treat();
+  }
+};
+var check_collision=function(){
+  for(i=1;i<snake.length;i++){
+    if(round_down(snake[0].x)==round_down(snake[i].x) && round_down(snake[0].y)==round_down(snake[i].y)){
+      dead();
+    }
   }
 };
 var dead=function(){
 
   playing=false;
-}
+};
 var makemoves=function(){
   if(snake.length>1){
     for(i=1;i<snake.length;i++){
@@ -102,15 +124,20 @@ var makemoves=function(){
 var eat_treat=function(){
   score+=10;
   basespeed+=0.1;
-  treat.x=Math.floor(Math.random()*500);
-  treat.y=Math.floor(Math.random()*500);
+  treat.x=Math.floor(Math.random()*xsize);
+  treat.y=Math.floor(Math.random()*ysize);
 
   snake.push(new snake_block(snake[snake.length-1].lastx,snake[snake.length-1].lasty));
 }
 function checkKey(e) {
 
     e = e || window.event;
-
+    if(!playing){
+      if (e.keyCode == '13') {
+        reset();
+        playing=true;
+      }
+    }
     if (e.keyCode == '38') {
 		// up
       xspeed=0;
@@ -153,18 +180,24 @@ function checkKey(e) {
 function round_down(value_x){
   return Math.round((value_x/block_size)-0.5)*block_size
 }
+function reset(){
+  snake=[];
+  snake.push(new snake_block(xsize/2,ysize/2));
+  basespeed=3;
+  xspeed=0;
+  yspeed=0;
+  score=0;
+}
 
 
 var recursiveAnim=function(){
 	mainloop();
-  if(playing){
-	   animFrame(recursiveAnim);
-   }
+
+	animFrame(recursiveAnim);
+
 };
 var start_game=function(){
-  snake=[];
-  snake.push(new snake_block(block_size/2,block_size/2));
-  basespeed=3;
+  reset();
   animFrame(recursiveAnim);
 };
 var playing=true;
