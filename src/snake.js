@@ -9,8 +9,10 @@ canvas.height=ysize;
 var ctx=canvas.getContext('2d');
 var basespeed=4;
 
-var x=[basespeed];
-var y=[basespeed];
+var snake=[];
+snake.push(new snake_block(block_size/2,block_size/2,block_size/2,block_size/2));
+
+
 var xspeed=0;
 var yspeed=0;
 
@@ -21,7 +23,25 @@ var animFrame = window.requestAnimationFrame ||
             window.msRequestAnimationFrame     ||
             null ;
 
+function snake_block(sx,sy,slx,sly){
+  this.x=sx;
+  this.y=sy;
+  this.lastx=slx;
+  this.lasty=sly;
+  this.move=function(){
+      if(round_down(this.x)!=round_down(this.x+xspeed)){
+        this.lastx=this.x;
+        this.lasty=this.y;
+      }
+      if(round_down(this.y)!=round_down(this.y+yspeed)){
+        this.lasty=this.y;
+        this.lastx=this.x;
+      }
+      this.x+=xspeed;
+      this.y+=yspeed;
 
+  }
+}
 var mainloop=function(){
   draw()
   update()
@@ -29,20 +49,19 @@ var mainloop=function(){
 
 var draw=function(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  console.log(x[0]);
 
-  ctx.fillRect(Math.round((x[0]/block_size)-0.5)*block_size,Math.round((y[0]/block_size)-0.5)*block_size,block_size,block_size);
-  
+  ctx.fillRect(round_down(snake[0].x),round_down(snake[0].y),block_size,block_size);
+  ctx.fillRect(round_down(snake[0].lastx),round_down(snake[0].lasty),block_size,block_size);
+
+
 };
 var update=function(){
   document.onkeydown = checkKey;
 
-  if(x[0]>=0+basespeed && x[0]<xsize-basespeed){
-    x[0]+=xspeed
+  if(snake[0].x>=0+basespeed && snake[0].x<xsize-basespeed && snake[0].y>=0+basespeed && snake[0].y<ysize-basespeed){
+    snake[0].move();
   }
-  if(y[0]>=0+basespeed && y[0]<ysize-basespeed){
-    y[0]+=yspeed
-  }
+
 
 };
 function checkKey(e) {
@@ -53,24 +72,24 @@ function checkKey(e) {
     if (e.keyCode == '38') {
 		// up
 		yspeed = -basespeed;
-    x[0]=Math.round((x[0]/block_size)-0.5)*block_size+block_size/2;
+    snake[0].x=round_down(snake[0].x)+block_size/2;
     }
     else if (e.keyCode == '40') {
 		// down
 		yspeed = basespeed;
-    x[0]=Math.round((x[0]/block_size)-0.5)*block_size+block_size/2;
+    snake[0].x=round_down(snake[0].x)+block_size/2;
 
     }
     else if (e.keyCode == '37') {
        // left arrow
 		xspeed = -basespeed;
-    y[0]=Math.round((y[0]/block_size)-0.5)*block_size+block_size/2;
+    snake[0].y=round_down(snake[0].y)+block_size/2;
 
     }
     else if (e.keyCode == '39') {
        // right arrow
 		xspeed = basespeed;
-    y[0]=Math.round((y[0]/block_size)-0.5)*block_size+block_size/2;
+    snake[0].y=round_down(snake[0].y)+block_size/2;
 
     }
 	//else if (e.keyCode == '32') {
@@ -79,6 +98,9 @@ function checkKey(e) {
 
 };
 
+function round_down(value_x){
+  return Math.round((value_x/block_size)-0.5)*block_size
+}
 
 
 var recursiveAnim=function(){
