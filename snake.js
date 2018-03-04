@@ -138,7 +138,7 @@ function checkKey(e) {
         playing=true;
       }
     }
-    if (e.keyCode == '38') {
+    if (e.keyCode == '38' || e.keyCode == '87') {
 		// up
       xspeed=0;
       if(yspeed<=0){
@@ -146,7 +146,7 @@ function checkKey(e) {
         snake[0].x=round_down(snake[0].x)+block_size/2;
       }
 		}
-    else if (e.keyCode == '40') {
+    else if (e.keyCode == '40' || e.keyCode == '83') {
 		// down
       xspeed=0;
       if(yspeed>=0){
@@ -154,7 +154,7 @@ function checkKey(e) {
         snake[0].x=round_down(snake[0].x)+block_size/2;
       }
     }
-    else if (e.keyCode == '37') {
+    else if (e.keyCode == '37' || e.keyCode == '65') {
        // left arrow
        yspeed=0;
        if(xspeed<=0){
@@ -163,7 +163,7 @@ function checkKey(e) {
       }
 
     }
-    else if (e.keyCode == '39') {
+    else if (e.keyCode == '39' || e.keyCode == '68') {
        // right arrow
        yspeed=0;
        if(xspeed>=0){
